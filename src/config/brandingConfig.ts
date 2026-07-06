@@ -204,7 +204,7 @@ export const BRAND = {
     /** Short abbreviation — used in localStorage keys */
     shortName: 'Shiny Shades',
     /** Prefix used for generated order numbers, e.g. "ORV-482910" */
-    orderPrefix: 'ORV',
+    orderPrefix: 'SS',
     // ── On-page Content ───────────────────────────────────────
     description:
         'Luxury feminine fashion crafted for the modern woman. Every piece tells a story of elegance, confidence, and timeless beauty.',
