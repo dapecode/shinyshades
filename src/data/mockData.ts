@@ -1,5 +1,5 @@
 /* ===================================================
-   Orivelle - Mock Data
+   Shiny Shades - Mock Data
    Production-ready data structure for development.
    Replace with Supabase queries in production.
    =================================================== */

@@ -1,5 +1,5 @@
 /* ===================================================
-   Orivelle - Admin Content Editor
+   Shiny Shades - Admin Content Editor
    Adds: hero free-drag component builder, video upload
    (drag-and-drop) for Banner / New Arrival / Sale banners
    =================================================== */

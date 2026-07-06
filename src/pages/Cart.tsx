@@ -118,7 +118,7 @@ export const CartPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Shopping Bag | Orivelle</title>
+        <title>Shopping Bag | Shiny Shades</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="min-h-screen pt-24 pb-16">

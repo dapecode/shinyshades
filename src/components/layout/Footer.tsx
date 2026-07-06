@@ -1,5 +1,5 @@
 /* ===================================================
-   Orivelle - Elegant Footer (Minimal Layout)
+   Shiny Shades - Elegant Footer (Minimal Layout)
    =================================================== */
 
 import React, { useEffect, useState } from 'react';

@@ -276,8 +276,8 @@ export const SalePage: React.FC = () => {
     return (
         <>
             <Helmet>
-                <title>Sale | Orivelle — Women's Fashion Deals Bangladesh</title>
-                <meta name="description" content="Shop Orivelle's sale collection. Discounted women's fashion including lingerie, dresses and more — delivered across Bangladesh." />
+                <title>Sale | Shiny Shades — Women's Fashion Deals Bangladesh</title>
+                <meta name="description" content="Shop Shiny Shades's sale collection. Discounted women's fashion including lingerie, dresses and more — delivered across Bangladesh." />
                 <link rel="canonical" href="https://orivelle.vercel.app/sale" />
             </Helmet>
             <div className="min-h-screen pt-24 pb-16">

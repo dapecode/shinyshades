@@ -1,5 +1,5 @@
 /* ===================================================
-   Orivelle - Announcement Bar
+   Shiny Shades - Announcement Bar
    FIXED VERSION
    - Fully visible on website
    - Works with floating navbar

@@ -1,5 +1,5 @@
 /**
- * AboutUs.tsx — Orivelle About Us page
+ * AboutUs.tsx — Shiny Shades About Us page
  *
  * Brand story, mission, values, and a CTA to shop or get in touch.
  * Follows the same patterns as ContactUs.tsx:

@@ -155,13 +155,13 @@ const ACTIVE_THEME: ThemeName = 'Black & White';   // ← change theme here
 export const BRAND = {
     // ── Brand Identity ────────────────────────────────────────
     /** Line 1 of the stacked logo (navbar, admin sidebar, login) */
-    nameTop: 'orivelle',
+    nameTop: 'Shiny Shades',
     /** Line 2 of the stacked logo */
     nameBottom: '',
     /** Full single-line name used in copyright, SEO, watermarks */
-    fullName: 'Orivelle',
+    fullName: 'Shiny Shades',
     /** Short abbreviation — used in localStorage keys */
-    shortName: 'orivelle',
+    shortName: 'Shiny Shades',
     /** Prefix used for generated order numbers, e.g. "ORV-482910" */
     orderPrefix: 'ORV',
     // ── On-page Content ───────────────────────────────────────
@@ -171,13 +171,13 @@ export const BRAND = {
     searchHint: 'dresses, Western tops, Bra, Panties, Slimwear, Lingeries, nightdress, accessories',
 
     /** Default text tiled as watermark on product images */
-    watermarkText: 'Orivelle',
+    watermarkText: 'Shiny Shades',
 
     // ── SEO ───────────────────────────────────────────────────
     defaultTitle:
-        "Orivelle — Premium Women's Fashion in Bangladesh",
+        "Shiny Shades — Premium Women's Fashion in Bangladesh",
     defaultDescription:
-        "Shop Orivelle — Bangladesh's premium destination for push-up bras, maternity wear, shapewear, nightwear, couple nightwear, and elegant western dresses. Fast delivery across Bangladesh.",
+        "Shop Shiny Shades — Bangladesh's premium destination for push-up bras, maternity wear, shapewear, nightwear, couple nightwear, and elegant western dresses. Fast delivery across Bangladesh.",
 
     // ── Assets ────────────────────────────────────────────────
     logoUrl: '/images/logo.png',

@@ -241,8 +241,8 @@ export const ShopPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Shop All | Orivelle — Premium Women's Fashion Bangladesh</title>
-        <meta name="description" content="Browse Orivelle's full collection of premium women's fashion including lingerie, dresses, and more. Free delivery across Bangladesh." />
+        <title>Shop All | Shiny Shades — Premium Women's Fashion Bangladesh</title>
+        <meta name="description" content="Browse Shiny Shades's full collection of premium women's fashion including lingerie, dresses, and more. Free delivery across Bangladesh." />
         <link rel="canonical" href="https://orivelle.vercel.app/shop" />
       </Helmet>
       <div className="min-h-screen pt-24 pb-16">

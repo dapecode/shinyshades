@@ -1,5 +1,5 @@
 /* ===================================================
-   Orivelle - Admin Login Page
+   Shiny Shades - Admin Login Page
    Real Supabase Authentication (no demo credentials)
    =================================================== */
 import { useAdminAuthStore } from '@/store';

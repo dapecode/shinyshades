@@ -1,5 +1,5 @@
 /* ===================================================
-   Orivelle - Admin Dashboard
+   Shiny Shades - Admin Dashboard
    Fixed: uses REAL orders instead of fake demo data
    =================================================== */
 

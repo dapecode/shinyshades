@@ -275,8 +275,8 @@ export const NewArrivalsPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>New Arrivals | Orivelle — Latest Women's Fashion</title>
-        <meta name="description" content="Shop the latest arrivals at Orivelle. Fresh styles in lingerie, dresses, and women's fashion — new drops every week." />
+        <title>New Arrivals | Shiny Shades — Latest Women's Fashion</title>
+        <meta name="description" content="Shop the latest arrivals at Shiny Shades. Fresh styles in lingerie, dresses, and women's fashion — new drops every week." />
         <link rel="canonical" href="https://orivelle.vercel.app/new-arrivals" />
       </Helmet>
       <div className="min-h-screen pt-24 pb-16">

@@ -1,5 +1,5 @@
 /* ===================================================
-   Orivelle - Reusable UI Components
+   Shiny Shades - Reusable UI Components
    =================================================== */
 
 import React from 'react';

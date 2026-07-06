@@ -645,7 +645,7 @@ const handlePlaceOrder = async () => {
     return (
       <>
         <Helmet>
-          <title>Checkout | Orivelle</title>
+          <title>Checkout | Shiny Shades</title>
           <meta name="robots" content="noindex, nofollow" />
         </Helmet>
 
