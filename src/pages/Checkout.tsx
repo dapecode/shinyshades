@@ -1125,7 +1125,7 @@ const handlePlaceOrder = async () => {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
 className="fixed inset-0 z-50 flex items-center justify-center p-4"
 style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', touchAction: 'manipulation' }}
-onClick={e => { if (e.target === e.currentTarget) setShowReview(false); }}>
+onPointerUp={e => { if (e.target === e.currentTarget) setShowReview(false); }}>
   <motion.div
               initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 60 }}
@@ -1218,7 +1218,10 @@ style={{
                   </button>
 <motion.button
   type="button"
-  onClick={handlePlaceOrder}
+  onPointerUp={(e) => {
+    e.stopPropagation();
+    handlePlaceOrder();
+  }}
   disabled={placing}
   whileTap={{ scale: 0.97 }}
   className="flex-1 py-3.5 rounded-2xl font-bold text-sm text-white"
