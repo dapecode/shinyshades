@@ -153,19 +153,19 @@ export const useOrderStore = create<OrderStore>()((set, get) => ({
   placeOrder: async (order) => {
     try {
       const row = orderToRow(order);
-      delete row.id;
+      delete row.id; // let Postgres generate the real UUID via gen_random_uuid()
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('orders')
-        .insert(row)
-        .select()
-        .single();
+        .insert(row);
 
       if (error) throw error;
 
-      // Use the DB-returned row so IDs/timestamps are canonical
-      const saved = rowToOrder(data);
-      set({ orders: [saved, ...get().orders] });
+      // No SELECT-back — guests have no SELECT policy on orders, by design
+      // (see schema.sql). Use the order object we already have locally for
+      // optimistic UI; the admin panel's fetchOrders() will show the real
+      // DB row (with real uuid + timestamps) on next load.
+      set({ orders: [order, ...get().orders] });
     } catch (err) {
       console.error('[OrderStore] placeOrder:', err);
       // Re-throw so the caller (Checkout) can surface a real error
