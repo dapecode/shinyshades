@@ -43,6 +43,8 @@ export type ThemeName =
     | 'Emerald'
     | 'Crimson'
     | 'Black & White'
+    | 'Luxury Gold'
+    | 'Royal Noir'
     | 'Custom';
 
 // ─── Theme presets ────────────────────────────────────────────────────────────
@@ -60,7 +62,21 @@ export const THEMES: Record<ThemeName, BrandColors> = {
         charcoal: '#2D2D2D',
         warmGray: '#6B5B5B',
     },
+'Royal Noir': {
+    primary: '#D4AF37',
+    primaryLight: '#F2D675',
+    primaryDark: '#9C7B18',
 
+    blush: '#2A2A2A',
+    blushLight: '#383838',
+    blushDark: '#1B1B1B',
+
+    softBg: '#0D0D0D',
+
+    charcoal: '#FFFFFF',
+
+    warmGray: '#B8B8B8',
+},
     /** Deep violet — elegant & editorial */
     'Midnight Purple': {
         primary: '#7C5CBF',
@@ -125,7 +141,32 @@ export const THEMES: Record<ThemeName, BrandColors> = {
         charcoal: '#000000',
         warmGray: '#5C5C5C',
     },
+     'Luxury Gold': {
+    // Premium Champagne Gold
+    primary: '#C9A227',
 
+    // Bright metallic gold
+    primaryLight: '#E4C96B',
+
+    // Rich antique gold
+    primaryDark: '#8B6B16',
+
+    // Luxury cream
+    blush: '#F7F2E8',
+
+    blushLight: '#FCFAF5',
+
+    blushDark: '#E9DFC9',
+
+    // Off-white instead of pure white
+    softBg: '#FAF8F3',
+
+    // Deep black
+    charcoal: '#111111',
+
+    // Warm luxury gray
+    warmGray: '#66615B',
+},
     /**
      * Custom palette — edit freely.
      * Then set activeTheme: 'Custom' below to use it.
@@ -150,7 +191,7 @@ export const THEMES: Record<ThemeName, BrandColors> = {
 //  ▼▼▼  EDIT THIS SECTION TO REBRAND / RETHEME YOUR STORE  ▼▼▼
 // ══════════════════════════════════════════════════════════════
 
-const ACTIVE_THEME: ThemeName = 'Black & White';   // ← change theme here
+const ACTIVE_THEME: ThemeName = 'Luxury Gold';   // ← change theme here
 
 export const BRAND = {
     // ── Brand Identity ────────────────────────────────────────

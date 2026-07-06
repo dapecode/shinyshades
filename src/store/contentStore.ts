@@ -46,6 +46,8 @@ export interface SiteSettings {
   siteShortName: string;
   domain: string;
   logoUrl: string;
+  /** Logo used for image watermarking in admin (falls back to logoUrl if empty) */
+  watermarkLogoUrl: string;
   /** Short brand description used in footer and OG fallback */
   brandDescription: string;
   /** Tagline shown in footer bottom bar and search placeholder */
@@ -153,6 +155,7 @@ export const defaultSiteSettings: SiteSettings = {
   siteShortName: siteConfig.websiteShortName,
   domain: SITE.domain,
   logoUrl: '',
+  watermarkLogoUrl: '',
   brandDescription: '',
   brandTagline: '',
 

@@ -25,6 +25,7 @@
     "browser-image-compression": "^2.0.2",
     "browserslist": "^4.28.2",
     "caniuse-lite": "^1.0.30001793",
+    "cloudinary": "^2.10.0",
     "clsx": "2.1.1",
     "color-name-list": "^14.40.0",
     "cookie": "^1.1.1",

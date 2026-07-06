@@ -10,7 +10,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Search, Menu, X, ChevronDown, Heart, Package } from 'lucide-react';
-import { useCartStore, useUIStore, useCategoryStore } from '@/store';
+import { useCartStore, useUIStore, useCategoryStore, useContentStore } from '@/store';
 import { BRAND } from '@/config/brandingConfig';
 import { CONTACT } from '@/config/contactConfig';
 
@@ -31,6 +31,8 @@ export const Navbar: React.FC<NavbarProps> = ({ barVisible = false }) => {
   const getItemCount = useCartStore(s => s.getItemCount);
 
   const { categories, loadCategories, loading: categoriesLoading } = useCategoryStore();
+  const { loadContent, getSiteSettings } = useContentStore();
+  const logoUrl = getSiteSettings().logoUrl;
 
   const itemCount = getItemCount();
 
@@ -39,7 +41,8 @@ export const Navbar: React.FC<NavbarProps> = ({ barVisible = false }) => {
 
   useEffect(() => {
     loadCategories();
-  }, [loadCategories]);
+    loadContent();
+  }, [loadCategories, loadContent]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -166,15 +169,19 @@ export const Navbar: React.FC<NavbarProps> = ({ barVisible = false }) => {
               {/* Logo */}
               <Link to="/" className="flex-shrink-0 flex items-center gap-2.5 group">
                 <div
-                  className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
-                  style={{ backgroundColor: charcoal }}
+                  className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                  style={{ backgroundColor: logoUrl ? 'transparent' : charcoal }}
                 >
-                  <span
-                    className="font-serif text-base md:text-lg font-bold"
-                    style={{ color: softBg }}
-                  >
-                    {BRAND.nameTop?.charAt(0)?.toUpperCase()}
-                  </span>
+                  {logoUrl ? (
+                    <img src={logoUrl} alt={BRAND.nameTop} className="w-full h-full object-cover" />
+                  ) : (
+                    <span
+                      className="font-serif text-base md:text-lg font-bold"
+                      style={{ color: softBg }}
+                    >
+                      {BRAND.nameTop?.charAt(0)?.toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col items-start leading-none">
                   <span
@@ -381,12 +388,16 @@ export const Navbar: React.FC<NavbarProps> = ({ barVisible = false }) => {
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2.5">
                     <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: charcoal }}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                      style={{ backgroundColor: logoUrl ? 'transparent' : charcoal }}
                     >
-                      <span className="font-serif text-sm font-bold" style={{ color: softBg }}>
-                        {BRAND.nameTop?.charAt(0)?.toUpperCase()}
-                      </span>
+                      {logoUrl ? (
+                        <img src={logoUrl} alt={BRAND.nameTop} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-serif text-sm font-bold" style={{ color: softBg }}>
+                          {BRAND.nameTop?.charAt(0)?.toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     <div className="flex flex-col items-start leading-none">
                       <span className="font-serif text-sm font-semibold tracking-[0.1em] capitalize" style={{ color: charcoal }}>

@@ -17,7 +17,7 @@ import type { Product } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { UploadCloud } from 'lucide-react';
 import { GripVertical } from 'lucide-react';
-
+import { useContentStore } from '@/store';
 // ─────────────────────────────────────────────────
 // WATERMARK POSITION — module-level mutable ref
 // ─────────────────────────────────────────────────
@@ -350,6 +350,7 @@ interface CustomLogoWmConfig {
 const CUSTOM_LOGO_LS_KEY = 'ag_custom_logo_wm_v1';
 
 const defaultCustomLogoWm: CustomLogoWmConfig = {
+ 
   enabled: false,
   imageDataUrl: '',
   size: 0.15,
@@ -917,6 +918,7 @@ const emptyProduct: any = {
 export const AdminProducts: React.FC = () => {
   const { products, addProduct, updateProduct, deleteProduct, fetchProducts } = useProductStore();
   const { categories } = useCategoryStore();
+  const { getSiteSettings, saveSiteSettings } = useContentStore();
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -973,6 +975,17 @@ export const AdminProducts: React.FC = () => {
       }
     };
     reader.readAsDataURL(file);
+
+    // Also push this logo to the site-wide brand settings (Navbar + watermark default)
+    uploadToCloudinary(file)
+      .then((url) => {
+        const current = getSiteSettings();
+        saveSiteSettings({
+          logoUrl: current.logoUrl || url, // don't overwrite an already-set nav logo unless empty
+          watermarkLogoUrl: url,
+        });
+      })
+      .catch((err) => console.error('[BrandLogo] Cloudinary upload failed:', err));
   };
 
   useEffect(() => { fetchProducts(); }, []);
