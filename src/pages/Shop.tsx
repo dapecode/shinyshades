@@ -243,7 +243,7 @@ export const ShopPage: React.FC = () => {
       <Helmet>
         <title>Shop All | Shiny Shades — Premium Women's Fashion Bangladesh</title>
         <meta name="description" content="Browse Shiny Shades's full collection of premium women's fashion including lingerie, dresses, and more. Free delivery across Bangladesh." />
-        <link rel="canonical" href="https://orivelle.vercel.app/shop" />
+        <link rel="canonical" href="https://shinyshades.vercel.app/shop" />
       </Helmet>
       <div className="min-h-screen pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
