@@ -209,16 +209,16 @@ export const BRAND = {
     description:
         'Luxury feminine fashion crafted for the modern woman. Every piece tells a story of elegance, confidence, and timeless beauty.',
     tagline: 'Designed with love for the modern woman',
-    searchHint: 'dresses, Western tops, Bra, Panties, Slimwear, Lingeries, nightdress, accessories',
+    searchHint: 'dresses, Western tops, Slimwear, Lingeries, nightdress, accessories',
 
     /** Default text tiled as watermark on product images */
     watermarkText: 'Shiny Shades',
 
     // ── SEO ───────────────────────────────────────────────────
     defaultTitle:
-        "Shiny Shades — Premium Women's Fashion in Bangladesh",
+        "Shiny Shades — Premium Women's Fashion",
     defaultDescription:
-        "Shop Shiny Shades — Bangladesh's premium destination for push-up bras, maternity wear, shapewear, nightwear, couple nightwear, and elegant western dresses. Fast delivery across Bangladesh.",
+        "Shop Shiny Shades — premium destination for  western Dress, traditional dress, shapewear, nightwear, couple nightwear, and elegant western dresses. Fast delivery across Bangladesh.",
 
     // ── Assets ────────────────────────────────────────────────
     logoUrl: '/images/logo.png',
