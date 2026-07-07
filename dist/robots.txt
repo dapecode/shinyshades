@@ -6,4 +6,4 @@ Disallow: /admin/
 Disallow: /cart
 Disallow: /checkout
 
-Sitemap: https://orivelle.vercel.app///sitemap.xml
+Sitemap:https://shinyshades.vercel.app//sitemap.xml
