@@ -13,7 +13,7 @@ export const trackingConfig = {
      * index.html reads the SAME env var via Vite's %VITE_*% placeholder
      * substitution, so both stay in sync automatically.
      */
-    facebookPixelId: import.meta.env.VITE_FB_PIXEL_ID || '517991158551582',
+    facebookPixelId: import.meta.env.VITE_FB_PIXEL_ID || '1341948154747302',
 
     /**
      * Google Tag Manager container ID — read from VITE_GTM_ID (Vercel env var).

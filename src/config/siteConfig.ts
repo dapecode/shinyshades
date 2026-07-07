@@ -187,7 +187,7 @@ keywords: [
     ogImage: '/images/og-image.jpg',
     // ─── Currency ───────────────────────────────────────────────
     currency: {
-        symbol: '$',   // ← change to '$' to switch to dollar
+        symbol: '৳',   // ← change to '$' to switch to dollar
         code: 'BDT',   // ← change to 'USD' to switch to dollar
     },
 } as const;

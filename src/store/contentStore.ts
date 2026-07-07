@@ -60,7 +60,7 @@ export interface SiteSettings {
   ogImage: string;
 
   // ── Analytics & Tracking ─────────────────────────────────────────────────
-  /** Facebook Pixel ID — e.g. "517991158551582" */
+  /** Facebook Pixel ID — e.g. "1341948154747302" */
   facebookPixelId: string;
   /** Google Tag Manager container ID — e.g. "GTM-TWN3NF5S" */
   gtmId: string;
