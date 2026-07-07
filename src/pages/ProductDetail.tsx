@@ -359,6 +359,7 @@ export const ProductDetailPage: React.FC = () => {
     if (!product) return;
     if (!selectedSize && product.sizes.length > 0) return;
     addItem(product, selectedSize, selectedColor, quantity);
+    console.log('🔵 AddToCart handler reached', product.name, product.price * quantity);
     trackAddToCart(product.name, product.price * quantity);
     window.dataLayer = window.dataLayer || [];
     trackAddToCart(product.name, product.price * quantity);

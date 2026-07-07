@@ -26,6 +26,7 @@ export const trackViewContent = (productName: string, price: number) => {
 };
 
 export const trackAddToCart = (productName: string, price: number) => {
+    console.log('🟢 trackAddToCart called with', productName, price, 'fbq exists?', typeof window.fbq);
     if (typeof window.fbq !== 'function') return;
     window.fbq('track', 'AddToCart', {
         content_name: productName,
