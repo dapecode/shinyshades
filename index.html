@@ -184,7 +184,15 @@
       t = b.createElement(e); t.async = !0; t.src = v;
       s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
     }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '%VITE_FB_PIXEL_ID%');
+    // Fallback: if VITE_FB_PIXEL_ID wasn't set at build time, Vite leaves the
+    // literal "%VITE_FB_PIXEL_ID%" string here instead of replacing it — that
+    // breaks fbq('init', ...) silently. This guard swaps in the known real ID
+    // any time the placeholder wasn't substituted, so tracking never goes dark.
+    var __fbPixelId = '%VITE_FB_PIXEL_ID%';
+    if (!__fbPixelId || __fbPixelId.indexOf('VITE_FB_PIXEL_ID') !== -1) {
+      __fbPixelId = '1341948154747302';
+    }
+    fbq('init', __fbPixelId);
   </script>
 
   <script defer>
@@ -197,7 +205,15 @@
       j.async = true;
       j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
       f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', '%VITE_GTM_ID%');
+    })(window, document, 'script', 'dataLayer',
+      (function () {
+        // Same fallback guard as the Pixel ID above, for GTM's container ID.
+        var __gtmId = '%VITE_GTM_ID%';
+        if (!__gtmId || __gtmId.indexOf('VITE_GTM_ID') !== -1) {
+          __gtmId = 'GTM-TWN3NF5S';
+        }
+        return __gtmId;
+      })());
   </script>
 
 </head>
@@ -205,14 +221,14 @@
 <body>
 
   <noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=%VITE_GTM_ID%" height="0" width="0"
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TWN3NF5S" height="0" width="0"
       style="display:none;visibility:hidden" title="Google Tag Manager" aria-hidden="true">
     </iframe>
   </noscript>
 
   <noscript>
     <img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=%VITE_FB_PIXEL_ID%&ev=PageView&noscript=1" alt="" aria-hidden="true" />
+      src="https://www.facebook.com/tr?id=1341948154747302&ev=PageView&noscript=1" alt="" aria-hidden="true" />
   </noscript>
 
   <div id="root">
