@@ -20,7 +20,7 @@ export const trackingConfig = {
      * Format: GTM-XXXXXXX. Falls back to the known ID if unset.
      * index.html reads the SAME env var, so both stay in sync automatically.
      */
-    gtmId: import.meta.env.VITE_GTM_ID || 'GTM-TWN3NF5S',
+    gtmId: import.meta.env.VITE_GTM_ID || '',
 
     /**
      * Google Search Console HTML-tag verification content value.

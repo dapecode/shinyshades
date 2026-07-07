@@ -22,11 +22,10 @@ import { ProductCard } from '@/components/home';
 import { supabase } from '@/lib/supabase';
 import { useCartStore, useRecentlyViewedStore } from '@/store';
 import type { Product } from '@/types';
-import { trackViewContent } from '@/lib/facebookPixel';
+import { trackViewContent, trackAddToCart } from '@/lib/facebookPixel';
 import { SITE } from '@/config/siteConfig';
 import { BRAND } from '@/config/brandingConfig';
 import { UI } from '@/config/brandingConfig';
-
 // ─── Color libraries — dynamically imported to keep initial bundle light ─────
 let _colorLib: {
   nameToHex: Record<string, string>;
@@ -360,7 +359,9 @@ export const ProductDetailPage: React.FC = () => {
     if (!product) return;
     if (!selectedSize && product.sizes.length > 0) return;
     addItem(product, selectedSize, selectedColor, quantity);
+    trackAddToCart(product.name, product.price * quantity);
     window.dataLayer = window.dataLayer || [];
+    trackAddToCart(product.name, product.price * quantity);
     window.dataLayer.push({ ecommerce: null });
     window.dataLayer.push({
       event: 'add_to_cart',
@@ -389,6 +390,7 @@ export const ProductDetailPage: React.FC = () => {
       return;
     }
     addItem(product, selectedSize, selectedColor, quantity);
+    trackAddToCart(product.name, product.price * quantity);
     navigate('/checkout');
   }, [product, selectedSize, selectedColor, quantity, addItem, navigate]);
   // ── Touch swipe handlers — use ref instead of window property ─────────────

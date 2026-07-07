@@ -19,11 +19,13 @@ import {
 import { useCartStore, useOrderStore, useCouponStore } from '@/store';
 import { sendOrderToGoogleSheets } from '@/lib/supabase';
 import type { PaymentMethod, Product, } from '@/types';
-import { trackInitiateCheckout, trackPurchase } from '@/lib/facebookPixel';
+import { trackInitiateCheckout, trackPurchase, trackPageView } from '@/lib/facebookPixel';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { SITE } from '@/config/siteConfig';
 import { BRAND } from '@/config/brandingConfig';
+
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
@@ -230,6 +232,11 @@ const CheckoutForm: React.FC = () => {
   const { coupons, loadCoupons } = useCouponStore();
   React.useEffect(() => { loadCoupons(); }, [loadCoupons]);
   const { placeOrder } = useOrderStore();
+
+  React.useEffect(() => {
+  trackPageView();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   const buyNow = location.state as BuyNowState | null;
 

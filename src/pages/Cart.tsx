@@ -11,7 +11,7 @@ import { Button, EmptyState, PriceDisplay } from '@/components/ui';
 import { useCartStore } from '@/store';
 import { SITE } from '@/config/siteConfig';
 import { Helmet } from 'react-helmet-async';
-
+import { trackPageView, trackViewContent } from '@/lib/facebookPixel';
 
 export const CartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -30,6 +30,25 @@ export const CartPage: React.FC = () => {
   const [couponCode, setCouponCode] = React.useState('');
 
   /* GTM — view_cart */
+React.useEffect(() => {
+  if (items.length === 0) return;
+
+  // Meta Pixel
+  trackPageView();
+  items.forEach((item) => {
+    trackViewContent(item.product.name, item.product.price * item.quantity);
+  });
+
+  // GTM — view_cart (existing code stays)
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ ecommerce: null });
+  window.dataLayer.push({
+    event: 'view_cart',
+    // ...unchanged
+  });
+}, []);
+
+  
   React.useEffect(() => {
     if (items.length === 0) return;
     window.dataLayer = window.dataLayer || [];
