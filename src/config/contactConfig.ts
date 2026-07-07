@@ -6,28 +6,28 @@
 
 export const CONTACT = {
     /** Display phone number — shown in footer, navbar drawer, contact page */
-    phone: '+880 1610-563060',
+    phone: '+8801410125508',
 
     /** WhatsApp number — digits only, no spaces or + sign */
-    whatsapp: '8801610563060',
+    whatsapp: '8801410125508',
 
     /** Payment / bKash tap-to-copy number used in Checkout */
-    bkashNumber: '01623-124760',
+    bkashNumber: '01410125508',
 
     /** Support email — shown in footer if set */
-    email: 'example@mail.com',
+    email: 'Shinyshades@mailbox.org',
 
     /** Physical office address */
-    address: 'Office Dhaka, Mohammadpur, Kaderabad Housing, Road No 6',
+    address: ' Dhaka, Mohammadpur, Kaderabad Housing ',
 
     /** Instagram profile URL — leave '' to hide icon */
-    instagram: 'https://www.instagram.com/',
+    instagram: 'https://www.instagram.com/shinyshades.store/',
 
     /** Facebook page URL — leave '' to hide icon */
-    facebook: 'https://www.facebook.com/Orivelles',
+    facebook: 'https://www.facebook.com/shinyshades/',
 
     /** Facebook Messenger URL — leave '' if unused */
-    messenger: 'https://m.me/Orivelles',
+    messenger: 'https://m.me/shinyshades',
 } as const;
 
 export type ContactConfig = typeof CONTACT;
@@ -49,7 +49,7 @@ export const contactConfig = {
     phoneNumber: CONTACT.phone,
     supportEmail: CONTACT.email,
     address: {
-        street: 'Kaderabad Housing, Road No 6',
+        street: 'Kaderabad Housing',
         city: 'Mohammadpur, Dhaka',
         state: '',
         zipCode: '',
