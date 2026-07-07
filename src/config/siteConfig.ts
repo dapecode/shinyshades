@@ -7,14 +7,15 @@
  */
 
 import { BRAND } from './brandingConfig';
+import { CONTACT } from './contactConfig';
 
 export const SITE = {
     /** Payment methods shown in footer */
-    paymentMethods: ['Card', 'COD'] as string[],
+    paymentMethods: ['bKash', 'Nagad', 'SSLCommerz', 'COD'] as string[],
 
-    /** Social links */
-    instagram: 'https://www.instagram.com',
-    facebook: 'https://www.facebook.com',
+    /** Social links — pulled from contactConfig so there's one source of truth */
+    instagram: CONTACT.instagram,
+    facebook: CONTACT.facebook,
 
     /** Canonical domain (no trailing slash) */
     domain: 'https://shinyshades.vercel.app',
@@ -184,19 +185,17 @@ keywords: [
     'buy jewelry online Bangladesh',
 ] as string[],
 
-    ogImage: '/images/og-image.jpg',
+    ogImage: BRAND.ogImage,
     // ─── Currency ───────────────────────────────────────────────
     currency: {
-        symbol: '৳',   // ← change to '$' to switch to dollar
-        code: 'BDT',   // ← change to 'USD' to switch to dollar
+        symbol: '৳',
+        code: 'BDT',
     },
 } as const;
 
 export type SiteConfig = typeof SITE;
 
 // ─── Legacy alias ─────────────────────────────────────────────────────────────
-// Any file still importing `siteConfig` (lowercase) keeps working.
-
 export const siteConfig = {
     websiteName: BRAND.fullName,
     websiteShortName: BRAND.shortName,

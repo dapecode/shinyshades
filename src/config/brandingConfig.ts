@@ -220,9 +220,12 @@ export const BRAND = {
     defaultDescription:
         "Shop Shiny Shades — premium destination for  western Dress, traditional dress, shapewear, nightwear, couple nightwear, and elegant western dresses. Fast delivery across Bangladesh.",
 
-    // ── Assets ────────────────────────────────────────────────
+// ── Assets ────────────────────────────────────────────────
     logoUrl: '/images/logo.png',
     faviconUrl: '/favicon.ico',
+    /** Single source of truth for OG / Twitter share image */
+    ogImage: `https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'nrdmy8ir'}/image/upload/f_auto,q_auto,w_1200,h_630,c_fill/${import.meta.env.VITE_CLOUDINARY_OG_FOLDER || 'shinyshades'}/${import.meta.env.VITE_CLOUDINARY_OG_FILENAME || 'og-banner.jpg'}`,
+
 
     // ── Theme ─────────────────────────────────────────────────
     activeTheme: ACTIVE_THEME,
