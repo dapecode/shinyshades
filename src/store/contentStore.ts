@@ -17,6 +17,9 @@ export interface Banner {
   buttonLink: string;
   gradient: string;
   imageUrl: string;
+  // Optional dedicated crop for narrow viewports — falls back to imageUrl
+  // when empty. Same pattern as heroImageUrlMobile.
+  imageUrlMobile?: string;
   videoUrl?: string;
   mediaType?: 'image' | 'video' | 'gradient';
   active: boolean;
@@ -112,6 +115,9 @@ export interface ContentData {
   heroSubtitle: string;
   heroButtonText: string;
   heroImageUrl: string;
+  // Optional separate crop/upload for narrow viewports — falls back to
+  // heroImageUrl when empty, so this is fully backward compatible.
+  heroImageUrlMobile?: string;
   heroLayout?: HeroLayout;
   newArrivalsSection: NewArrivalsSection;
   heroExtraComponents?: HeroExtraComponent[];
@@ -197,6 +203,7 @@ export const defaultContent: ContentData = {
   heroSubtitle: 'Explore our curated collection of girlswear — designed for confidence, comfort, and elegance.',
   heroButtonText: 'Shop Now',
   heroImageUrl: '',
+  heroImageUrlMobile: '',
 
   newArrivalsSection: {
     title: 'New Arrivals',

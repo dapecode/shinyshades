@@ -27,6 +27,7 @@ export const NewArrivalsHero: React.FC<{
     title?: string;
     subtitle?: string;
     imageUrl?: string;
+    imageUrlMobile?: string;
     videoUrl?: string;
     mediaType?: 'gradient' | 'image' | 'video';
     gradient?: string;
@@ -41,13 +42,29 @@ export const NewArrivalsHero: React.FC<{
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="relative mb-10 rounded-3xl overflow-hidden min-h-[200px] md:min-h-[240px]"
       style={
-        mediaType === 'image' && banner?.imageUrl
-          ? { backgroundImage: `url(${banner.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-          : mediaType !== 'video'
-            ? { background: banner?.gradient || 'linear-gradient(135deg, #F5E6DC 0%, #EDD5C5 40%, #E8C9B8 100%)' }
-            : undefined
+        mediaType !== 'image' && mediaType !== 'video'
+          ? { background: banner?.gradient || 'linear-gradient(135deg, #F5E6DC 0%, #EDD5C5 40%, #E8C9B8 100%)' }
+          : undefined
       }
     >
+      {mediaType === 'image' && banner?.imageUrl && (
+        <>
+          {banner.imageUrlMobile && (
+            <div
+              className="absolute inset-0 block md:hidden"
+              style={{ backgroundImage: `url(${banner.imageUrlMobile})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            />
+          )}
+          <div
+            className={`absolute inset-0 ${banner.imageUrlMobile ? 'hidden md:block' : 'block'}`}
+            style={{
+              backgroundImage: `url(${banner.imageUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: banner.imageUrlMobile ? 'center' : 'center 30%',
+            }}
+          />
+        </>
+      )}
       {mediaType === 'video' && banner?.videoUrl && (
         <video
           src={banner.videoUrl}

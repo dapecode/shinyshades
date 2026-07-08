@@ -49,6 +49,7 @@ type BannerLike = {
 
   mediaType?: BannerMediaType;
   imageUrl?: string;
+  imageUrlMobile?: string;
   videoUrl?: string;
   gradient: string;
 };
@@ -244,24 +245,32 @@ export const AdminContent: React.FC = () => {
   // Hero image state
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [heroPreview, setHeroPreview] = useState('');
+  const [heroFileMobile, setHeroFileMobile] = useState<File | null>(null);
+  const [heroPreviewMobile, setHeroPreviewMobile] = useState('');
 
   // Homepage banner media state
   const [bannerFiles, setBannerFiles] = useState<Record<string, File>>({});
   const [bannerPreviews, setBannerPreviews] = useState<Record<string, string>>({});
   const [bannerVideoFiles, setBannerVideoFiles] = useState<Record<string, File>>({});
   const [bannerVideoPreviews, setBannerVideoPreviews] = useState<Record<string, string>>({});
+  const [bannerMobileFiles, setBannerMobileFiles] = useState<Record<string, File>>({});
+  const [bannerMobilePreviews, setBannerMobilePreviews] = useState<Record<string, string>>({});
 
   // New Arrival banner media state
   const [newArrivalBannerFiles, setNewArrivalBannerFiles] = useState<Record<string, File>>({});
   const [newArrivalBannerPreviews, setNewArrivalBannerPreviews] = useState<Record<string, string>>({});
   const [newArrivalBannerVideoFiles, setNewArrivalBannerVideoFiles] = useState<Record<string, File>>({});
   const [newArrivalBannerVideoPreviews, setNewArrivalBannerVideoPreviews] = useState<Record<string, string>>({});
+  const [newArrivalBannerMobileFiles, setNewArrivalBannerMobileFiles] = useState<Record<string, File>>({});
+  const [newArrivalBannerMobilePreviews, setNewArrivalBannerMobilePreviews] = useState<Record<string, string>>({});
 
   // Sale banner media state
   const [saleBannerFiles, setSaleBannerFiles] = useState<Record<string, File>>({});
   const [saleBannerPreviews, setSaleBannerPreviews] = useState<Record<string, string>>({});
   const [saleBannerVideoFiles, setSaleBannerVideoFiles] = useState<Record<string, File>>({});
   const [saleBannerVideoPreviews, setSaleBannerVideoPreviews] = useState<Record<string, string>>({});
+  const [saleBannerMobileFiles, setSaleBannerMobileFiles] = useState<Record<string, File>>({});
+  const [saleBannerMobilePreviews, setSaleBannerMobilePreviews] = useState<Record<string, string>>({});
 
   // Hero drag-and-drop builder state
   const heroCanvasRef = useRef<HTMLDivElement>(null);
@@ -477,6 +486,12 @@ export const AdminContent: React.FC = () => {
         updatedContent = { ...updatedContent, heroImageUrl: url };
       }
 
+      // Step 1b: Upload mobile hero crop if selected
+      if (heroFileMobile) {
+        const mobileUrl = await uploadContentMedia(heroFileMobile, 'hero-mobile', 'image');
+        updatedContent = { ...updatedContent, heroImageUrlMobile: mobileUrl };
+      }
+
       // Step 2: Upload homepage banner images + videos
       const updatedBanners = [...updatedContent.banners];
       for (const [bannerId, file] of Object.entries(bannerFiles)) {
@@ -488,6 +503,11 @@ export const AdminContent: React.FC = () => {
         const url = await uploadContentMedia(file, 'banners', 'video');
         const idx = updatedBanners.findIndex(b => b.id === bannerId);
         if (idx !== -1) updatedBanners[idx] = { ...updatedBanners[idx], videoUrl: url };
+      }
+      for (const [bannerId, file] of Object.entries(bannerMobileFiles)) {
+        const url = await uploadContentMedia(file, 'banners-mobile', 'image');
+        const idx = updatedBanners.findIndex(b => b.id === bannerId);
+        if (idx !== -1) updatedBanners[idx] = { ...updatedBanners[idx], imageUrlMobile: url };
       }
       updatedContent = { ...updatedContent, banners: updatedBanners };
 
@@ -503,6 +523,11 @@ export const AdminContent: React.FC = () => {
         const idx = updatedNewArrivalBanners.findIndex(b => b.id === bannerId);
         if (idx !== -1) updatedNewArrivalBanners[idx] = { ...updatedNewArrivalBanners[idx], videoUrl: url };
       }
+      for (const [bannerId, file] of Object.entries(newArrivalBannerMobileFiles)) {
+        const url = await uploadContentMedia(file, 'new-arrival-banners-mobile', 'image');
+        const idx = updatedNewArrivalBanners.findIndex(b => b.id === bannerId);
+        if (idx !== -1) updatedNewArrivalBanners[idx] = { ...updatedNewArrivalBanners[idx], imageUrlMobile: url };
+      }
       updatedContent = { ...updatedContent, newArrivalBanners: updatedNewArrivalBanners };
 
       // Step 4: Upload sale banner images + videos
@@ -516,6 +541,11 @@ export const AdminContent: React.FC = () => {
         const url = await uploadContentMedia(file, 'sale-banners', 'video');
         const idx = updatedSaleBanners.findIndex(b => b.id === bannerId);
         if (idx !== -1) updatedSaleBanners[idx] = { ...updatedSaleBanners[idx], videoUrl: url };
+      }
+      for (const [bannerId, file] of Object.entries(saleBannerMobileFiles)) {
+        const url = await uploadContentMedia(file, 'sale-banners-mobile', 'image');
+        const idx = updatedSaleBanners.findIndex(b => b.id === bannerId);
+        if (idx !== -1) updatedSaleBanners[idx] = { ...updatedSaleBanners[idx], imageUrlMobile: url };
       }
       updatedContent = { ...updatedContent, saleBanners: updatedSaleBanners };
 
@@ -568,6 +598,9 @@ export const AdminContent: React.FC = () => {
     videoPreviews: Record<string, string>,
     setVideoFiles: React.Dispatch<React.SetStateAction<Record<string, File>>>,
     setVideoPreviews: React.Dispatch<React.SetStateAction<Record<string, string>>>,
+    mobilePreviews: Record<string, string>,
+    setMobileFiles: React.Dispatch<React.SetStateAction<Record<string, File>>>,
+    setMobilePreviews: React.Dispatch<React.SetStateAction<Record<string, string>>>,
   ) => (
     <div className="glass-card rounded-2xl p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
@@ -600,6 +633,7 @@ export const AdminContent: React.FC = () => {
                           title: banner.title,
                           subtitle: banner.subtitle,
                           imageUrl: imagePreviews[banner.id] || banner.imageUrl,
+                          imageUrlMobile: mobilePreviews[banner.id] || banner.imageUrlMobile,
                           videoUrl: videoPreviews[banner.id] || banner.videoUrl,
                           mediaType,
                           gradient: banner.gradient,
@@ -611,6 +645,7 @@ export const AdminContent: React.FC = () => {
                           title: banner.title,
                           subtitle: banner.subtitle,
                           imageUrl: imagePreviews[banner.id] || banner.imageUrl,
+                          imageUrlMobile: mobilePreviews[banner.id] || banner.imageUrlMobile,
                           videoUrl: videoPreviews[banner.id] || banner.videoUrl,
                           mediaType,
                           gradient: banner.gradient,
@@ -682,6 +717,25 @@ export const AdminContent: React.FC = () => {
                     }}
                     onRemoveCurrent={() => handlers.update(index, 'imageUrl', '')}
                   />
+                )}
+
+                {mediaType === 'image' && (
+                  <div>
+                    <label className="block text-sm font-medium text-[#6B5B55] mb-1.5">
+                      Mobile Crop <span className="font-normal text-[#6B5B55]/70">— optional</span>
+                    </label>
+                    <MediaDropzone
+                      accept="image/*"
+                      cropAspect={4 / 5}
+                      currentUrl={banner.imageUrlMobile}
+                      preview={mobilePreviews[banner.id]}
+                      onFile={file => {
+                        setMobileFiles(prev => ({ ...prev, [banner.id]: file }));
+                        setMobilePreviews(prev => ({ ...prev, [banner.id]: URL.createObjectURL(file) }));
+                      }}
+                      onRemoveCurrent={() => handlers.update(index, 'imageUrlMobile', '')}
+                    />
+                  </div>
                 )}
 
                 {mediaType === 'video' && (
@@ -902,8 +956,11 @@ export const AdminContent: React.FC = () => {
 
           <div>
             <label className="text-sm font-medium text-[#6B5B55] mb-1.5 flex items-center gap-1.5">
-              <Image size={14} /> Hero Background Image
+              <Image size={14} /> Hero Background Image (Desktop)
             </label>
+            <p className="text-xs text-[#6B5B55]/70 mb-2">
+              Wide banner shape (16:7). Shown on tablets and desktop.
+            </p>
             <MediaDropzone
               accept="image/*"
               cropAspect={16 / 7}
@@ -914,6 +971,29 @@ export const AdminContent: React.FC = () => {
                 setHeroPreview(URL.createObjectURL(file));
               }}
               onRemoveCurrent={() => updateField('heroImageUrl', '')}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-[#6B5B55] mb-1.5 flex items-center gap-1.5">
+              <Image size={14} /> Hero Background Image (Mobile)
+              <span className="text-xs font-normal text-[#6B5B55]/70">— optional</span>
+            </label>
+            <p className="text-xs text-[#6B5B55]/70 mb-2">
+              Taller crop (4:5) for phones, so the subject isn't cut off.
+              If left empty, the desktop image is reused (and shifted slightly
+              to reduce cropping, but a dedicated upload looks much better).
+            </p>
+            <MediaDropzone
+              accept="image/*"
+              cropAspect={4 / 5}
+              currentUrl={content.heroImageUrlMobile}
+              preview={heroPreviewMobile}
+              onFile={file => {
+                setHeroFileMobile(file);
+                setHeroPreviewMobile(URL.createObjectURL(file));
+              }}
+              onRemoveCurrent={() => updateField('heroImageUrlMobile', '')}
             />
           </div>
         </div>
@@ -1053,6 +1133,7 @@ export const AdminContent: React.FC = () => {
         { update: updateBanner, add: addBanner, remove: removeBanner },
         bannerPreviews, setBannerFiles, setBannerPreviews,
         bannerVideoPreviews, setBannerVideoFiles, setBannerVideoPreviews,
+        bannerMobilePreviews, setBannerMobileFiles, setBannerMobilePreviews,
       )}
 
       {/* ── New Arrival Page Banners ─────────────────────────────────────────── */}
@@ -1062,6 +1143,7 @@ export const AdminContent: React.FC = () => {
         { update: updateNewArrivalBanner, add: addNewArrivalBanner, remove: removeNewArrivalBanner },
         newArrivalBannerPreviews, setNewArrivalBannerFiles, setNewArrivalBannerPreviews,
         newArrivalBannerVideoPreviews, setNewArrivalBannerVideoFiles, setNewArrivalBannerVideoPreviews,
+        newArrivalBannerMobilePreviews, setNewArrivalBannerMobileFiles, setNewArrivalBannerMobilePreviews,
       )}
 
       {/* ── Sale Page Banners ────────────────────────────────────────────────── */}
@@ -1071,6 +1153,7 @@ export const AdminContent: React.FC = () => {
         { update: updateSaleBanner, add: addSaleBanner, remove: removeSaleBanner },
         saleBannerPreviews, setSaleBannerFiles, setSaleBannerPreviews,
         saleBannerVideoPreviews, setSaleBannerVideoFiles, setSaleBannerVideoPreviews,
+        saleBannerMobilePreviews, setSaleBannerMobileFiles, setSaleBannerMobilePreviews,
       )}
     </div>
   );

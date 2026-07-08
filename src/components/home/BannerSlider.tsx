@@ -60,14 +60,29 @@ export const BannerSlider: React.FC = () => {
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
                             ) : mediaType === 'image' && banner.imageUrl ? (
-                                <div
-                                    className="absolute inset-0"
-                                    style={{
-                                        backgroundImage: `url(${banner.imageUrl})`,
-                                        backgroundSize: 'cover',
-                                        backgroundPosition: 'center',
-                                    }}
-                                />
+                                <>
+                                    {/* Mobile crop — only rendered below md breakpoint, when provided */}
+                                    {banner.imageUrlMobile && (
+                                        <div
+                                            className="absolute inset-0 block md:hidden"
+                                            style={{
+                                                backgroundImage: `url(${banner.imageUrlMobile})`,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                            }}
+                                        />
+                                    )}
+                                    {/* Desktop image — always the fallback; hidden on mobile only
+                                        when a dedicated mobile crop exists */}
+                                    <div
+                                        className={`absolute inset-0 ${banner.imageUrlMobile ? 'hidden md:block' : 'block'}`}
+                                        style={{
+                                            backgroundImage: `url(${banner.imageUrl})`,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: banner.imageUrlMobile ? 'center' : 'center 30%',
+                                        }}
+                                    />
+                                </>
                             ) : (
                                 <div className="absolute inset-0" style={{ background: banner.gradient }} />
                             )}

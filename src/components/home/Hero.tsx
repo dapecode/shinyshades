@@ -40,16 +40,26 @@ export const Hero: React.FC = () => {
     const heroSrcSet = hasImage ? buildSrcSet(content.heroImageUrl) : undefined;
     const heroSizes = '100vw';
 
-    const heroSrc = hasImage
-        ? (() => {
-            if (!content.heroImageUrl.includes('cloudinary.com')) return content.heroImageUrl;
-            const marker = '/upload/';
-            const idx = content.heroImageUrl.indexOf(marker);
-            if (idx === -1) return content.heroImageUrl;
-            const base = content.heroImageUrl.slice(0, idx + marker.length);
-            const rest = content.heroImageUrl.slice(idx + marker.length);
-            return `${base}w_1280,q_auto,f_auto/${rest}`;
-        })()
+    const optimizeUrl = (url: string, width: number): string => {
+        if (!url.includes('cloudinary.com')) return url;
+        const marker = '/upload/';
+        const idx = url.indexOf(marker);
+        if (idx === -1) return url;
+        const base = url.slice(0, idx + marker.length);
+        const rest = url.slice(idx + marker.length);
+        return `${base}w_${width},q_auto,f_auto/${rest}`;
+    };
+
+    const heroSrc = hasImage ? optimizeUrl(content.heroImageUrl, 1280) : undefined;
+
+    // Mobile crop is optional — falls back to the desktop image (with
+    // object-position adjusted below) when the admin hasn't uploaded one.
+    const hasMobileImage = !!content.heroImageUrlMobile;
+    const heroMobileSrc = hasMobileImage
+        ? optimizeUrl(content.heroImageUrlMobile!, 768)
+        : undefined;
+    const heroMobileSrcSet = hasMobileImage
+        ? buildSrcSet(content.heroImageUrlMobile!)
         : undefined;
 
     const prefersReducedMotion =
@@ -73,19 +83,39 @@ export const Hero: React.FC = () => {
         >
             {/* Background: image or gradient */}
             {hasImage ? (
-                <img
-                    src={heroSrc}
-                    srcSet={heroSrcSet}
-                    sizes={heroSizes}
-                    alt=""
-                    aria-hidden="true"
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="sync"
-                    width={1920}
-                    height={1080}
-                    className="absolute inset-0 w-full h-full object-cover object-center"
-                />
+                <picture>
+                    {/* Dedicated mobile crop, when the admin has uploaded one */}
+                    {hasMobileImage && (
+                        <source
+                            media="(max-width: 767px)"
+                            srcSet={heroMobileSrcSet || heroMobileSrc}
+                            sizes={heroSizes}
+                        />
+                    )}
+                    <img
+                        src={heroSrc}
+                        srcSet={heroSrcSet}
+                        sizes={heroSizes}
+                        alt=""
+                        aria-hidden="true"
+                        loading="eager"
+                        fetchPriority="high"
+                        decoding="sync"
+                        width={1920}
+                        height={1080}
+                        /*
+                          Without a dedicated mobile image, a wide desktop banner
+                          (16/7) gets center-cropped hard on narrow screens.
+                          object-position shifts the visible window up slightly
+                          so key subjects near the top of the banner aren't lost —
+                          purely a fallback; uploading a mobile crop above is the
+                          real fix for badly-cropped subjects.
+                        */
+                        className={`absolute inset-0 w-full h-full object-cover ${hasMobileImage ? 'object-center' : 'object-center md:object-center'
+                            }`}
+                        style={!hasMobileImage ? { objectPosition: '50% 30%' } : undefined}
+                    />
+                </picture>
             ) : (
                 <div className="absolute inset-0 hero-gradient" aria-hidden="true" />
             )}
