@@ -1062,3 +1062,5 @@ style={{
     </div>
   );
 };
+
+export const CheckoutPage: React.FC = CheckoutForm
