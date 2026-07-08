@@ -36,6 +36,14 @@ const announcementColorPresets = [
   { bg: '#D4949E', text: '#FFFFFF', name: 'Dusty Pink' },
 ];
 
+// ── Banner media target dimensions ──────────────────────────────────────────
+// Hero + Banner Slider: 1920×840 desktop, 1440×810 mobile (both requested by design).
+// New Arrival / Sale page banners: desktop crop is unchanged (already correct),
+// only the mobile crop now matches the same 1440×810 widescreen shape.
+const DESKTOP_BANNER_ASPECT = 1920 / 840; // 16 / 7
+const DEFAULT_DESKTOP_ASPECT = 16 / 6; // unchanged existing shape for New Arrival / Sale desktop crops
+const MOBILE_BANNER_ASPECT = 1440 / 810; // 16 / 9
+
 type BannerMediaType = 'gradient' | 'image' | 'video';
 
 type BannerLike = {
@@ -90,6 +98,33 @@ const uploadContentMedia = async (
 
   return data.secure_url;
 };
+
+// ── Small, reusable card section header (icon + title + optional description) ──
+const SectionHeader: React.FC<{
+  icon?: React.ReactNode;
+  title: string;
+  description?: string;
+  action?: React.ReactNode;
+}> = ({ icon, title, description, action }) => (
+  <div className="flex items-start justify-between gap-4 mb-4">
+    <div className="flex items-start gap-2.5">
+      {icon && <div className="mt-0.5 text-rose-gold shrink-0">{icon}</div>}
+      <div>
+        <h3 className="font-semibold text-charcoal leading-tight">{title}</h3>
+        {description && <p className="text-xs text-[#6B5B55]/80 mt-0.5">{description}</p>}
+      </div>
+    </div>
+    {action && <div className="shrink-0">{action}</div>}
+  </div>
+);
+
+// ── Subtle inline hint/tip box, replaces the old inline emoji lines ──
+const Hint: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="mt-4 flex items-start gap-2 text-xs text-[#6B5B55] bg-blush-light/25 border border-blush/20 rounded-lg px-3 py-2">
+    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-rose-gold shrink-0" />
+    <p>{children}</p>
+  </div>
+);
 
 // ── Reusable drag-and-drop media uploader (image or video) ──
 // Images go through the crop modal first; videos upload as-is.
@@ -601,12 +636,15 @@ export const AdminContent: React.FC = () => {
     mobilePreviews: Record<string, string>,
     setMobileFiles: React.Dispatch<React.SetStateAction<Record<string, File>>>,
     setMobilePreviews: React.Dispatch<React.SetStateAction<Record<string, string>>>,
+    // Desktop crop shape is only overridden for the Banner Slider (to match the
+    // Hero: 1920×840). New Arrival / Sale desktop crops are left as-is.
+    desktopCropAspect: number = DEFAULT_DESKTOP_ASPECT,
   ) => (
     <div className="glass-card rounded-2xl p-6 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-charcoal">{sectionTitle} ({banners.length} banners)</h3>
-        <Button size="sm" onClick={handlers.add}><Plus size={14} /> Add Banner</Button>
-      </div>
+      <SectionHeader
+        title={`${sectionTitle} · ${banners.length} ${banners.length === 1 ? 'banner' : 'banners'}`}
+        action={<Button size="sm" onClick={handlers.add}><Plus size={14} /> Add Banner</Button>}
+      />
 
       <div className="space-y-4">
         {banners.map((banner, index) => {
@@ -623,7 +661,7 @@ export const AdminContent: React.FC = () => {
                 : { background: banner.gradient };
 
           return (
-            <div key={banner.id} className="border border-blush/20 rounded-xl overflow-hidden">
+            <div key={banner.id} className="border border-blush/25 rounded-xl overflow-hidden bg-white/40 hover:shadow-sm transition-shadow">
               {sectionTitle === 'New Arrival Page Banners' || sectionTitle === 'Sale Page Banners' ? (
                 <div className="relative">
                   <div className="pointer-events-none scale-[0.6] origin-top-left w-[166%]">
@@ -682,7 +720,19 @@ export const AdminContent: React.FC = () => {
                 </div>
               )}
 
-              <div className="p-4 space-y-3">
+              <div className="p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-[#6B5B55]/70 uppercase tracking-wide">
+                    Banner {index + 1}
+                  </span>
+                  <span
+                    className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${banner.active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                      }`}
+                  >
+                    {banner.active ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input label="Title" value={banner.title} onChange={e => handlers.update(index, 'title', e.target.value)} />
                   <Input label="Button Text" value={banner.buttonText} onChange={e => handlers.update(index, 'buttonText', e.target.value)} />
@@ -706,27 +756,35 @@ export const AdminContent: React.FC = () => {
                 </div>
 
                 {mediaType === 'image' && (
-                  <MediaDropzone
-                    accept="image/*"
-                    cropAspect={16 / 6}
-                    currentUrl={banner.imageUrl}
-                    preview={imagePreviews[banner.id]}
-                    onFile={file => {
-                      setImageFiles(prev => ({ ...prev, [banner.id]: file }));
-                      setImagePreviews(prev => ({ ...prev, [banner.id]: URL.createObjectURL(file) }));
-                    }}
-                    onRemoveCurrent={() => handlers.update(index, 'imageUrl', '')}
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-[#6B5B55] mb-1.5">
+                      Desktop Image
+                      {sectionTitle === 'Banner Slider' && (
+                        <span className="ml-1.5 font-normal text-[#6B5B55]/60">— 1920 × 840px</span>
+                      )}
+                    </label>
+                    <MediaDropzone
+                      accept="image/*"
+                      cropAspect={desktopCropAspect}
+                      currentUrl={banner.imageUrl}
+                      preview={imagePreviews[banner.id]}
+                      onFile={file => {
+                        setImageFiles(prev => ({ ...prev, [banner.id]: file }));
+                        setImagePreviews(prev => ({ ...prev, [banner.id]: URL.createObjectURL(file) }));
+                      }}
+                      onRemoveCurrent={() => handlers.update(index, 'imageUrl', '')}
+                    />
+                  </div>
                 )}
 
                 {mediaType === 'image' && (
                   <div>
                     <label className="block text-sm font-medium text-[#6B5B55] mb-1.5">
-                      Mobile Crop <span className="font-normal text-[#6B5B55]/70">— optional</span>
+                      Mobile Crop <span className="font-normal text-[#6B5B55]/70">— optional, 1440 × 810px</span>
                     </label>
                     <MediaDropzone
                       accept="image/*"
-                      cropAspect={4 / 5}
+                      cropAspect={MOBILE_BANNER_ASPECT}
                       currentUrl={banner.imageUrlMobile}
                       preview={mobilePreviews[banner.id]}
                       onFile={file => {
@@ -769,9 +827,9 @@ export const AdminContent: React.FC = () => {
                   </div>
                 )}
 
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={banner.active} onChange={e => handlers.update(index, 'active', e.target.checked)} className="w-4 h-4 rounded accent-rose-gold" />
-                  <span className="text-sm text-charcoal">Active (show on website)</span>
+                <label className="flex items-center gap-2 cursor-pointer pt-1 border-t border-blush/15">
+                  <input type="checkbox" checked={banner.active} onChange={e => handlers.update(index, 'active', e.target.checked)} className="w-4 h-4 rounded accent-rose-gold mt-1" />
+                  <span className="text-sm text-charcoal mt-1">Active (show on website)</span>
                 </label>
               </div>
             </div>
@@ -779,18 +837,16 @@ export const AdminContent: React.FC = () => {
         })}
       </div>
 
-      <p className="text-xs text-[#6B5B55] mt-4">
-        💡 Click <strong>Save Changes</strong> to upload media and apply all edits to the website.
-      </p>
+      <Hint>Click <strong>Save Changes</strong> to upload media and apply all edits to the website.</Hint>
     </div>
   );
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-blush/20">
         <div>
           <h1 className="heading-serif text-2xl md:text-3xl font-bold text-charcoal">Content Editor</h1>
-          <p className="text-[#6B5B55] text-sm">Manage homepage content without touching code</p>
+          <p className="text-[#6B5B55] text-sm mt-0.5">Manage homepage content without touching code</p>
         </div>
         <Button onClick={handleSave} disabled={uploading}>
           {uploading ? 'Uploading...' : saved ? '✓ Saved!' : <><Save size={16} /> Save Changes</>}
@@ -798,27 +854,28 @@ export const AdminContent: React.FC = () => {
       </div>
 
       {uploadError && (
-        <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-          ⚠️ {uploadError}
+        <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+          {uploadError}
         </div>
       )}
 
       {/* ── Announcement Bar ─────────────────────────────────────────────────── */}
       <div className="glass-card rounded-2xl p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-charcoal flex items-center gap-2">
-            <Megaphone size={16} className="text-rose-gold" /> Announcement Bar
-          </h3>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={content.announcement?.enabled ?? false}
-              onChange={e => updateAnnouncement('enabled', e.target.checked)}
-              className="w-4 h-4 rounded accent-rose-gold"
-            />
-            <span className="text-sm text-charcoal">Enabled</span>
-          </label>
-        </div>
+        <SectionHeader
+          icon={<Megaphone size={16} />}
+          title="Announcement Bar"
+          action={
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={content.announcement?.enabled ?? false}
+                onChange={e => updateAnnouncement('enabled', e.target.checked)}
+                className="w-4 h-4 rounded accent-rose-gold"
+              />
+              <span className="text-sm text-charcoal">Enabled</span>
+            </label>
+          }
+        />
 
         {/* Live Preview */}
         <div
@@ -826,7 +883,7 @@ export const AdminContent: React.FC = () => {
           style={{ backgroundColor: content.announcement?.bgColor ?? '#000', color: content.announcement?.textColor ?? '#fff' }}
         >
           <p className="text-sm text-center" style={{ fontWeight: content.announcement?.bold ? 600 : 500 }}>
-            ✨ {messages[0] || 'Your announcement preview'}
+            {messages[0] || 'Your announcement preview'}
           </p>
         </div>
 
@@ -867,7 +924,7 @@ export const AdminContent: React.FC = () => {
                   : 'bg-blush-light/50 text-charcoal hover:bg-blush-light'
                   }`}
               >
-                {anim === 'marquee' ? '➡️ Scrolling' : anim === 'fade' ? '✨ Fade' : '⏸️ Static'}
+                {anim === 'marquee' ? 'Scrolling' : anim === 'fade' ? 'Fade' : 'Static'}
               </button>
             ))}
           </div>
@@ -923,23 +980,24 @@ export const AdminContent: React.FC = () => {
 
       {/* ── Hero Section ─────────────────────────────────────────────────────── */}
       <div className="glass-card rounded-2xl p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-charcoal flex items-center gap-2">
-            <Eye size={16} className="text-rose-gold" /> Hero Section
-          </h3>
-          <button
-            type="button"
-            onClick={() => updateField('heroEnabled', !content.heroEnabled)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-blush/30 bg-white/60 hover:bg-white/80 transition-colors"
-          >
-            {content.heroEnabled
-              ? <ToggleRight size={20} className="text-rose-gold" />
-              : <ToggleLeft size={20} className="text-[#6B5B55]" />}
-            <span className="text-sm font-medium text-charcoal">
-              {content.heroEnabled ? 'Visible' : 'Hidden'}
-            </span>
-          </button>
-        </div>
+        <SectionHeader
+          icon={<Eye size={16} />}
+          title="Hero Section"
+          action={
+            <button
+              type="button"
+              onClick={() => updateField('heroEnabled', !content.heroEnabled)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-blush/30 bg-white/60 hover:bg-white/80 transition-colors"
+            >
+              {content.heroEnabled
+                ? <ToggleRight size={20} className="text-rose-gold" />
+                : <ToggleLeft size={20} className="text-[#6B5B55]" />}
+              <span className="text-sm font-medium text-charcoal">
+                {content.heroEnabled ? 'Visible' : 'Hidden'}
+              </span>
+            </button>
+          }
+        />
 
         <div className="space-y-4">
           <Input label="Hero Title" value={content.heroTitle} onChange={e => updateField('heroTitle', e.target.value)} />
@@ -959,11 +1017,11 @@ export const AdminContent: React.FC = () => {
               <Image size={14} /> Hero Background Image (Desktop)
             </label>
             <p className="text-xs text-[#6B5B55]/70 mb-2">
-              Wide banner shape (16:7). Shown on tablets and desktop.
+              1920 × 840px. Shown on tablets and desktop.
             </p>
             <MediaDropzone
               accept="image/*"
-              cropAspect={16 / 7}
+              cropAspect={DESKTOP_BANNER_ASPECT}
               currentUrl={content.heroImageUrl}
               preview={heroPreview}
               onFile={file => {
@@ -980,13 +1038,13 @@ export const AdminContent: React.FC = () => {
               <span className="text-xs font-normal text-[#6B5B55]/70">— optional</span>
             </label>
             <p className="text-xs text-[#6B5B55]/70 mb-2">
-              Taller crop (4:5) for phones, so the subject isn't cut off.
-              If left empty, the desktop image is reused (and shifted slightly
-              to reduce cropping, but a dedicated upload looks much better).
+              1440 × 810px widescreen crop for phones, so the subject isn't cropped awkwardly.
+              If left empty, the desktop image is reused (and repositioned to reduce cropping,
+              but a dedicated upload looks much better).
             </p>
             <MediaDropzone
               accept="image/*"
-              cropAspect={4 / 5}
+              cropAspect={MOBILE_BANNER_ASPECT}
               currentUrl={content.heroImageUrlMobile}
               preview={heroPreviewMobile}
               onFile={file => {
@@ -1002,7 +1060,7 @@ export const AdminContent: React.FC = () => {
             Drag the chips below to reposition Title / Subtitle / Buttons
             anywhere on the hero. A chip only appears here — and on the live
             site — when its matching field above actually has text. */}
-        <div className="mt-6">
+        <div className="mt-6 pt-6 border-t border-blush/15">
           <div className="flex items-center justify-between mb-2">
             <label className="text-sm font-medium text-[#6B5B55]">
               Component Placement <span className="text-[#6B5B55]/70">(drag to position)</span>
@@ -1107,15 +1165,13 @@ export const AdminContent: React.FC = () => {
               ))}
             </div>
           )}
-          <p className="text-xs text-[#6B5B55] mt-2">
-            💡 Clearing Hero Title / Subtitle / Button Text above removes that chip here — and hides it on the live site.
-          </p>
+          <Hint>Clearing Hero Title / Subtitle / Button Text above removes that chip here — and hides it on the live site.</Hint>
         </div>
       </div>
 
       {/* ── Section Titles ───────────────────────────────────────────────────── */}
       <div className="glass-card rounded-2xl p-6 mb-6">
-        <h3 className="font-semibold text-charcoal mb-4">Section Titles</h3>
+        <SectionHeader title="Section Titles" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input label="Featured Title" value={content.featuredTitle} onChange={e => updateField('featuredTitle', e.target.value)} />
           <Input label="Featured Subtitle" value={content.featuredSubtitle} onChange={e => updateField('featuredSubtitle', e.target.value)} />
@@ -1134,6 +1190,7 @@ export const AdminContent: React.FC = () => {
         bannerPreviews, setBannerFiles, setBannerPreviews,
         bannerVideoPreviews, setBannerVideoFiles, setBannerVideoPreviews,
         bannerMobilePreviews, setBannerMobileFiles, setBannerMobilePreviews,
+        DESKTOP_BANNER_ASPECT,
       )}
 
       {/* ── New Arrival Page Banners ─────────────────────────────────────────── */}
