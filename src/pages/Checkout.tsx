@@ -20,76 +20,9 @@ import { useCartStore, useOrderStore, useCouponStore } from '@/store';
 import { sendOrderToGoogleSheets } from '@/lib/supabase';
 import type { PaymentMethod, Product, } from '@/types';
 import { trackInitiateCheckout, trackPurchase, trackPageView } from '@/lib/facebookPixel';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { SITE } from '@/config/siteConfig';
 import { BRAND } from '@/config/brandingConfig';
 
-
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
-
-/* Stripe card element wrapper — separate fields for number, expiry, CVC */
-const stripeElementStyle = {
-  base: {
-    fontSize: '14px',
-    color: '#2C2C2C',
-    fontFamily: 'inherit',
-    '::placeholder': { color: '#aab7c4' },
-  },
-  invalid: { color: '#C0504D' },
-};
-
-const StripeCardField: React.FC<{
-  onReady: (ready: boolean) => void;
-  cardholderName: string;
-  onCardholderNameChange: (name: string) => void;
-}> = ({ onReady, cardholderName, onCardholderNameChange }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-
-  React.useEffect(() => {
-    onReady(!!(stripe && elements));
-  }, [stripe, elements, onReady]);
-
-  return (
-    <div className="rounded-xl overflow-hidden"
-      style={{ border: '1.5px solid rgba(99,91,255,0.25)', background: '#fff' }}>
-
-      {/* Card Number */}
-      <div className="px-4 py-3"
-        style={{ borderBottom: '1px solid rgba(99,91,255,0.12)' }}>
-        <p className="text-[10px] font-semibold mb-1.5 uppercase tracking-wide" style={{ color: '#9CA3AF' }}>Card Number</p>
-        <CardNumberElement options={{ style: stripeElementStyle, showIcon: true }} />
-      </div>
-
-      {/* Expiry + CVC side by side */}
-      <div className="flex" style={{ borderBottom: '1px solid rgba(99,91,255,0.12)' }}>
-        <div className="flex-1 px-4 py-3" style={{ borderRight: '1px solid rgba(99,91,255,0.12)' }}>
-          <p className="text-[10px] font-semibold mb-1.5 uppercase tracking-wide" style={{ color: '#9CA3AF' }}>MM / YY</p>
-          <CardExpiryElement options={{ style: stripeElementStyle }} />
-        </div>
-        <div className="flex-1 px-4 py-3">
-          <p className="text-[10px] font-semibold mb-1.5 uppercase tracking-wide" style={{ color: '#9CA3AF' }}>CVC / CVV</p>
-          <CardCvcElement options={{ style: stripeElementStyle }} />
-        </div>
-      </div>
-
-      {/* Cardholder name */}
-      <div className="px-4 py-3">
-        <p className="text-[10px] font-semibold mb-1.5 uppercase tracking-wide" style={{ color: '#9CA3AF' }}>Card Holder Name</p>
-        <input
-          type="text"
-          placeholder="John Smith"
-          value={cardholderName}
-          onChange={e => onCardholderNameChange(e.target.value)}
-          className="w-full text-sm outline-none bg-transparent"
-          style={{ color: '#2C2C2C' }}
-        />
-      </div>
-    </div>
-  );
-};
 
 
 interface BuyNowState {
@@ -224,8 +157,6 @@ const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (p
    can call useStripe()/useElements())
 ════════════════════════════════════════ */
 const CheckoutForm: React.FC = () => {
-  const stripe = useStripe();
-  const elements = useElements();
   const navigate = useNavigate();
   const location = useLocation();
   const { items, getSubtotal, getDiscount, clearCart } = useCartStore();
@@ -320,13 +251,6 @@ const CheckoutForm: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
   const selectPaymentMethod = (m: PaymentMethod) => { setPaymentMethod(m); setGatewayError(''); };
 
-  // Card form state (collected before Stripe confirms)
-  const [cardForm, setCardForm] = useState({
-    cardholderName: '',
-    billingAddress: '',
-  });
-  const [cardFormErrors, setCardFormErrors] = useState<{ cardholderName?: string }>({});
-  const [stripeReady, setStripeReady] = useState(false);
   const [gatewayError, setGatewayError] = useState('');
 
   // SSLCommerz extra info
@@ -408,13 +332,7 @@ const CheckoutForm: React.FC = () => {
     if (!form.addressLine.trim()) newErrors.addressLine = 'Please enter your address.';
     if (!deliveryZone) newErrors.deliveryZone = 'Please select a delivery option.';
 
-    let cardErr: typeof cardFormErrors = {};
-    if (paymentMethod === 'stripe') {
-      if (!cardForm.cardholderName.trim()) cardErr.cardholderName = 'Cardholder name is required.';
-    }
-
     setErrors(newErrors);
-    setCardFormErrors(cardErr);
 
     // Order of fields top-to-bottom — scroll to the first one that failed.
     const order: Array<[boolean, React.RefObject<HTMLDivElement | null>]> = [
@@ -425,16 +343,10 @@ const CheckoutForm: React.FC = () => {
       [!!newErrors.postCode, postCodeRef],
       [!!newErrors.addressLine, addressLineRef],
       [!!newErrors.deliveryZone, deliveryZoneRef],
-      [!!cardErr.cardholderName, cardholderRef],
     ];
     const firstInvalid = order.find(([invalid]) => invalid);
     if (firstInvalid) {
       scrollToRef(firstInvalid[1]);
-      return false;
-    }
-
-    if (paymentMethod === 'stripe' && !stripeReady) {
-      scrollToRef(cardholderRef);
       return false;
     }
 
@@ -477,7 +389,7 @@ const handlePlaceOrder = async () => {
     const [firstName, ...rest] = form.fullName.trim().split(' ');
     const lastName = rest.join(' ');
 
-    const isGatewayPayment = paymentMethod === 'stripe' || paymentMethod === 'sslcommerz';
+    const isGatewayPayment = paymentMethod === 'sslcommerz';
     const countryName = COUNTRIES.find(c => c.iso2 === form.country)?.name || form.country;
 
     const orderData = {
@@ -530,47 +442,6 @@ const handlePlaceOrder = async () => {
     //    so we don't mark the order complete or clear the cart yet.
     if (isGatewayPayment) {
       try {
-        if (paymentMethod === 'stripe') {
-          if (!stripe || !elements) throw new Error('Stripe.js has not finished loading yet.');
-
-          const cardNumberElement = elements.getElement(CardNumberElement);
-          if (!cardNumberElement) throw new Error('Card form is not ready.');
-
-          // 1) Ask our server to create a PaymentIntent for this order.
-          const resp = await fetch('/api/create-payment-intent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              orderNumber: num,
-              amount: total,
-              currency: 'usd',
-            }),
-          });
-          const data = await resp.json();
-          if (!resp.ok || !data.clientSecret) throw new Error(data.error || 'Could not start payment.');
-
-          // 2) Confirm the card right here on our own page. Stripe.js pops up
-          //    the 3D Secure challenge automatically when the card requires it,
-          //    and this call resolves only after that's done.
-          const result = await stripe.confirmCardPayment(data.clientSecret, {
-            payment_method: {
-              card: cardNumberElement,
-              billing_details: { name: cardForm.cardholderName },
-            },
-          });
-
-          if (result.error) throw new Error(result.error.message || 'Card payment failed.');
-          if (result.paymentIntent?.status !== 'succeeded') {
-            throw new Error('Payment was not completed. Please try again.');
-          }
-
-          // 3) Payment confirmed client-side. The Stripe webhook will mark
-          //    the order 'verified' in the DB momentarily — the success page
-          //    polls for that, same as the old redirect-based flow did.
-          navigate(`/payment/success?order=${encodeURIComponent(num)}`);
-          return; // leave `placing` true — we're navigating away
-        }
-
         if (paymentMethod === 'sslcommerz') {
           const resp = await fetch('/api/sslcommerz-init', {
             method: 'POST',
@@ -930,61 +801,7 @@ const handlePlaceOrder = async () => {
                 </AnimatePresence>
               </div>
 
-              {/* ── Card / Stripe ── */}
-              <div className="rounded-2xl overflow-hidden"
-                style={{ border: paymentMethod === 'stripe' ? '2px solid #635BFF' : '1.5px solid rgba(176,125,107,0.35)' }}>
-                <button onClick={() => selectPaymentMethod('stripe')}
-                  className="w-full flex items-center gap-3 p-3 text-left transition-all"
-                  style={{ background: paymentMethod === 'stripe' ? 'rgba(99,91,255,0.06)' : 'rgba(255,255,255,0.85)' }}>
-                  <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                    style={{ borderColor: paymentMethod === 'stripe' ? '#635BFF' : '#ccc' }}>
-                    {paymentMethod === 'stripe' && <div className="w-4 h-4 rounded-full" style={{ background: '#635BFF' }} />}
-                  </div>
-                  <CreditCard size={18} style={{ color: '#635BFF' }} />
-                  <div className="flex-1">
-                    <p className="font-semibold text-[14px] text-[#2A2A2A]">Credit / Debit Card</p>
-                    <p className="text-xs text-[#6B5B55]">Visa, Mastercard, Amex — secured by Stripe</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-white" style={{ background: '#1A1F71' }}>VISA</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-white" style={{ background: '#EB001B' }}>MC</span>
-                  </div>
-                </button>
-                <AnimatePresence>
-                  {paymentMethod === 'stripe' && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                      <div ref={cardholderRef} className="px-4 pb-4 pt-3 space-y-3"
-                        style={{ background: 'rgba(99,91,255,0.03)', borderTop: '1px solid rgba(99,91,255,0.15)' }}>
 
-                        {/* Stripe card fields */}
-                        <StripeCardField onReady={setStripeReady} cardholderName={cardForm.cardholderName} onCardholderNameChange={name => setCardForm(p => ({ ...p, cardholderName: name }))} />
-                        {cardFormErrors.cardholderName && (
-                          <p className="text-xs flex items-center gap-1" style={{ color: '#C0504D' }}>
-                            <AlertCircle size={11} />{cardFormErrors.cardholderName}
-                          </p>
-                        )}
-
-                        {/* Use shipping address as billing */}
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="checkbox" defaultChecked className="w-4 h-4 accent-[#635BFF]" />
-                          <span className="text-xs" style={{ color: '#4A4A6A' }}>Use shipping address as billing address</span>
-                        </label>
-
-                        {/* Trust badges */}
-                        <div className="flex gap-3 pt-1">
-                          <div className="flex items-center gap-1 text-xs" style={{ color: '#6B5B55' }}>
-                            <Shield size={12} style={{ color: '#635BFF' }} /> SSL Encrypted
-                          </div>
-                          <div className="flex items-center gap-1 text-xs" style={{ color: '#6B5B55' }}>
-                            <CheckCircle size={12} className="text-green-500" /> PCI Compliant
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
               {/* 
               {/* ── SSLCommerz ── 
               <div className="rounded-2xl overflow-hidden"
@@ -1176,13 +993,8 @@ style={{
                   style={{ background: 'rgba(176,125,107,0.06)', border: '1px solid rgba(176,125,107,0.15)' }}>
                   <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#B07D6B' }}>💳 Payment</p>
                   <p className="text-sm text-charcoal">
-                    {paymentMethod === 'cod' ? 'Cash on Delivery'
-                      : paymentMethod === 'stripe' ? 'Credit / Debit Card (Stripe)'
-                        : 'SSLCommerz'}
+                    {paymentMethod === 'cod' ? 'Cash on Delivery' : 'SSLCommerz'}
                   </p>
-                  {paymentMethod === 'stripe' && cardForm.cardholderName && (
-                    <p className="text-xs text-warm-gray mt-1">Cardholder: {cardForm.cardholderName}</p>
-                  )}
                 </div>
 
                 {/* Items */}
@@ -1250,11 +1062,3 @@ style={{
     </div>
   );
 };
-/* Outer wrapper: provides the Stripe Elements context that CheckoutForm
-   needs in order to call useStripe()/useElements(). This is the default
-   export your router should keep using. */
-export const CheckoutPage: React.FC = () => (
-  <Elements stripe={stripePromise}>
-    <CheckoutForm />
-  </Elements>
-);
