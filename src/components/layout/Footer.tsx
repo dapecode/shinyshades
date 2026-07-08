@@ -72,9 +72,11 @@ function useCategoriesSync() {
     // Initial fetch
     fetchCategories();
 
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
     // Delay subscription slightly to avoid premature-close errors
     const timer = setTimeout(() => {
-      const channel = supabase
+      channel = supabase
         .channel('public:categories')
         .on(
           'postgres_changes',
@@ -84,13 +86,14 @@ function useCategoriesSync() {
           }
         )
         .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [fetchCategories]);
 }
 
