@@ -14,6 +14,7 @@ import { FadeIn, Button, Select } from '@/components/ui';
 import { useProductStore } from '@/store';
 import { useContentStore } from '@/store/contentStore';
 import { Helmet } from 'react-helmet-async';
+import { SITE } from '@/config/siteConfig';
 
 /* ─── Size options ─── */
 const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size'];
@@ -266,8 +267,8 @@ export const SalePage: React.FC = () => {
                     className="w-full accent-rose-gold"
                 />
                 <div className="flex justify-between text-sm text-[#6B5B55] mt-1.5">
-                    <span>$0</span>
-                    <span>{priceRange[1] >= maxPrice ? 'No limit' : `$${priceRange[1].toLocaleString()}`}</span>
+                    <span>{SITE.currency.symbol}0</span>
+                    <span>{priceRange[1] >= maxPrice ? 'No limit' : `${SITE.currency.symbol}${priceRange[1].toLocaleString()}`}</span>
                 </div>
             </div>
         </div>

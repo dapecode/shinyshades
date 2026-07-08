@@ -279,7 +279,7 @@ const RecentlyViewedProducts = memo(() => {
                   <Link
                     to={`/product/${product.slug}`}
                     className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold focus-visible:rounded-2xl"
-                    aria-label={`View ${product.name}${product.comparePrice && product.comparePrice > product.price ? ` — On sale from $${product.price}` : ` — $${product.price}`}`}
+                    aria-label={`View ${product.name}${product.comparePrice && product.comparePrice > product.price ? ` — On sale from ${SITE.currency.symbol}${product.price}` : ` — ${SITE.currency.symbol}${product.price}`}`}
                   >
                     {/* Photo card — explicit aspect-ratio eliminates CLS */}
                     <div
