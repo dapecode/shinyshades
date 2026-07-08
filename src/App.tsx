@@ -281,14 +281,19 @@ const CustomerLayout = memo(() => {
 
       {/*
         min-h-screen prevents CLS from content-less shells.
-        pt-10 only applied when the announcement bar is visible
-        so layout shift is contained to a known-height reservation.
+        Padding-top must always reserve the Navbar's own height
+        (h-16 / md:h-[68px]) since it's `fixed`, plus the
+        AnnouncementBar's height (h-9 / md:h-10) when visible.
       */}
       <main
         id="main-content"
         role="main"
         tabIndex={-1}
-        className={`min-h-screen${barVisible ? ' pt-10' : ''}`}
+        className={`min-h-screen ${
+          barVisible
+            ? 'pt-[100px] md:pt-[108px]'
+            : 'pt-16 md:pt-[68px]'
+        }`}
       >
         <Outlet />
       </main>
