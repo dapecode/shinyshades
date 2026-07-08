@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui';
 import { useContentStore } from '@/store/contentStore';
 
 // Falls back to inferring the type from which URL is populated, so older
@@ -45,7 +44,8 @@ export const BannerSlider: React.FC = () => {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -100 }}
                             transition={{ duration: 0.6, ease: 'easeInOut' }}
-                            className="absolute inset-0 flex items-center"
+                            onClick={() => navigate(banner.buttonLink)}
+                            className="absolute inset-0 flex items-center cursor-pointer"
                         >
                             {/* Background layer: video > image > gradient */}
                             {mediaType === 'video' && banner.videoUrl ? (
@@ -102,10 +102,6 @@ export const BannerSlider: React.FC = () => {
                                 >
                                     {banner.subtitle}
                                 </p>
-                                <Button onClick={() => navigate(banner.buttonLink)}>
-                                    {banner.buttonText}
-                                    <ArrowRight size={16} />
-                                </Button>
                             </div>
                         </motion.div>
                     </AnimatePresence>
