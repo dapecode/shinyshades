@@ -628,13 +628,13 @@ const applyWatermark = (
 // MINI THUMBNAIL with watermark overlay
 // ─────────────────────────────────────────────────
 const MiniWatermarkThumb: React.FC<{
-  file: File; xFrac: number; yFrac: number;
+  file: File; xFrac: number; yFrac: number; enabled?: boolean;
   textWmEnabled?: boolean; textWmText?: string; textWmOpacity?: number;
   textWmSize?: number; textWmAngle?: number; textWmColor?: string;
   textWmSpacingX?: number; textWmSpacingY?: number;
   logoText?: string; logoColorLeft?: string; logoColorRight?: string;
   customLogoWm?: CustomLogoWmConfig;
-}> = ({ file, xFrac, yFrac, textWmEnabled = false, textWmText = BRAND.watermarkText,
+}> = ({ file, xFrac, yFrac, enabled = true, textWmEnabled = false, textWmText = BRAND.watermarkText,
   textWmOpacity = 0.18, textWmSize = 22, textWmAngle = -30,
   textWmColor = '#ffffff', textWmSpacingX = 180, textWmSpacingY = 90,
   logoText = `${BRAND.orderPrefix}-${Date.now().toString().slice(-6)}`, logoColorLeft = '#C0C0C0', logoColorRight = '#F5A623',
@@ -659,22 +659,24 @@ const MiniWatermarkThumb: React.FC<{
       canvas.height = displayH;
       ctx.drawImage(img, 0, 0, displayW, displayH);
 
-      const useCustomLogo =
-        customLogoWm?.enabled &&
-        customLogoWm.imageDataUrl &&
-        customLogoWm.imageDataUrl.length > 10;
+      if (enabled) {
+        const useCustomLogo =
+          customLogoWm?.enabled &&
+          customLogoWm.imageDataUrl &&
+          customLogoWm.imageDataUrl.length > 10;
 
-      if (useCustomLogo) {
-        try {
-          const logoImg = await loadImageFromDataUrl(customLogoWm!.imageDataUrl);
-          drawCustomLogoWatermark(ctx, displayW, displayH, xRef.current, yRef.current, logoImg, customLogoWm!);
-        } catch {
+        if (useCustomLogo) {
+          try {
+            const logoImg = await loadImageFromDataUrl(customLogoWm!.imageDataUrl);
+            drawCustomLogoWatermark(ctx, displayW, displayH, xRef.current, yRef.current, logoImg, customLogoWm!);
+          } catch {
+            const size = Math.max(10, Math.min(displayW, displayH) * 0.08);
+            drawAGLogo(ctx, xRef.current * displayW, yRef.current * displayH, size, logoText, logoColorLeft, logoColorRight);
+          }
+        } else {
           const size = Math.max(10, Math.min(displayW, displayH) * 0.08);
           drawAGLogo(ctx, xRef.current * displayW, yRef.current * displayH, size, logoText, logoColorLeft, logoColorRight);
         }
-      } else {
-        const size = Math.max(10, Math.min(displayW, displayH) * 0.08);
-        drawAGLogo(ctx, xRef.current * displayW, yRef.current * displayH, size, logoText, logoColorLeft, logoColorRight);
       }
 
       if (textWmEnabled) {
@@ -727,7 +729,7 @@ const MiniWatermarkThumb: React.FC<{
     }, [file]);
     useEffect(() => {
       redraw();
-    }, [xFrac, yFrac, textWmEnabled, textWmText, textWmOpacity, textWmSize, textWmAngle, textWmColor, textWmSpacingX, textWmSpacingY, logoText, logoColorLeft, logoColorRight, customLogoWm?.enabled, customLogoWm?.imageDataUrl, customLogoWm?.size, customLogoWm?.opacity, customLogoWm?.bgEnabled, customLogoWm?.bgColor, customLogoWm?.bgOpacity, customLogoWm?.borderRadius, customLogoWm?.padding, customLogoWm?.shadowEnabled, customLogoWm?.shadowStrength]);
+    }, [xFrac, yFrac, enabled, textWmEnabled, textWmText, textWmOpacity, textWmSize, textWmAngle, textWmColor, textWmSpacingX, textWmSpacingY, logoText, logoColorLeft, logoColorRight, customLogoWm?.enabled, customLogoWm?.imageDataUrl, customLogoWm?.size, customLogoWm?.opacity, customLogoWm?.bgEnabled, customLogoWm?.bgColor, customLogoWm?.bgOpacity, customLogoWm?.borderRadius, customLogoWm?.padding, customLogoWm?.shadowEnabled, customLogoWm?.shadowStrength]);
 
     return (
       <canvas
@@ -2105,6 +2107,7 @@ export const AdminProducts: React.FC = () => {
                             file={file}
                             xFrac={wmFrac.xFrac}
                             yFrac={wmFrac.yFrac}
+                            enabled={wmEnabled}
                             textWmEnabled={textWmEnabled}
                             textWmText={textWmText}
                             textWmOpacity={textWmOpacity}

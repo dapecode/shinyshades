@@ -76,6 +76,8 @@ function rowToProduct(item: any): Product {
     reviewCount: Number(item.review_count) || 0,
     createdAt: item.created_at || '',
     updatedAt: item.updated_at || '',
+    customText: item.custom_text || '',
+    videoUrl: item.video_url || '',
   };
 }
 
